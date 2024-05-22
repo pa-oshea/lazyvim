@@ -1,6 +1,6 @@
 return {
   "nvim-lualine/lualine.nvim",
-  opt = {
+  opts = {
     winbar = {
       lualine_a = {
         {
