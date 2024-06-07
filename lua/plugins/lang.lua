@@ -1,11 +1,5 @@
 return {
   {
-    "LazyVim/LazyVim",
-    opts = {
-      colorscheme = "catppuccin",
-    },
-  },
-  {
     "mfussenegger/nvim-jdtls",
     ---@type lspconfig.options.jdtls
     ---@diagnostic disable-next-line: missing-fields
