@@ -4,5 +4,11 @@ return {
     filesystem = {
       group_empty_dirs = true,
     },
+    git_status = {
+      group_empty_dirs = true,
+    },
+    buffer = {
+      group_empty_dirs = true,
+    },
   },
 }
