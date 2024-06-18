@@ -1,43 +1,135 @@
+local keymaps = function() end
+
 return {
   {
     "rcasia/neotest-java",
-    init = function()
-      -- override the default keymaps.
-      -- needed until neotest-java is integrated in LazyVim
-      local keys = require("lazyvim.plugins.lsp.keymaps").get()
-      -- run test file
-      keys[#keys + 1] = {
-        "<leader>tt",
+    tag = "v0.10.0",
+    ft = "java",
+    dependencies = {
+      "nvim-neotest/neotest",
+      dependencies = {
+        "nvim-neotest/nvim-nio",
+        "nvim-lua/plenary.nvim",
+        "antoinemadec/FixCursorHold.nvim",
+        "nvim-treesitter/nvim-treesitter",
+      },
+    },
+    keys = {
+      { "<leader>tn", "", desc = "+neotest" },
+      {
+        "<leader>tnt",
         function()
           require("neotest").run.run(vim.fn.expand("%"))
         end,
-        mode = "n",
-      }
-      -- run nearest test
-      keys[#keys + 1] = {
-        "<leader>tr",
+        desc = "Run File",
+      },
+      {
+        "<leader>tnT",
+        function()
+          require("neotest").run.run(vim.uv.cwd())
+        end,
+        desc = "Run All Test Files",
+      },
+      {
+        "<leader>tnr",
         function()
           require("neotest").run.run()
         end,
-        mode = "n",
-      }
-      -- debug test file
-      keys[#keys + 1] = {
-        "<leader>tD",
+        desc = "Run Nearest",
+      },
+      {
+        "<leader>tnl",
         function()
-          require("jdtls.dap").test_class()
+          require("neotest").run.run_last()
         end,
-        mode = "n",
-      }
-      -- debug nearest test
-      keys[#keys + 1] = {
-        "<leader>td",
+        desc = "Run Last",
+      },
+      {
+        "<leader>tns",
         function()
-          require("jdtls.dap").test_nearest_method()
+          require("neotest").summary.toggle()
         end,
-        mode = "n",
-      }
+        desc = "Toggle Summary",
+      },
+      {
+        "<leader>tno",
+        function()
+          require("neotest").output.open({ enter = true, auto_close = true })
+        end,
+        desc = "Show Output",
+      },
+      {
+        "<leader>tnO",
+        function()
+          require("neotest").output_panel.toggle()
+        end,
+        desc = "Toggle Output Panel",
+      },
+      {
+        "<leader>tnS",
+        function()
+          require("neotest").run.stop()
+        end,
+        desc = "Stop",
+      },
+      {
+        "<leader>tnw",
+        function()
+          require("neotest").watch.toggle(vim.fn.expand("%"))
+        end,
+        desc = "Toggle Watch",
+      },
+    },
+    config = function()
+      require("neotest").setup({
+        adapters = {
+          require("neotest-java")({
+            ignore_wrapper = false, -- whether to ignore maven/gradle wrapper
+          }),
+        },
+        output = { open_on_run = true },
+        quickfix = {
+          open = function()
+            vim.cmd("copen")
+          end,
+        },
+      })
+
+      -- vim.keymap.set("n", "<leader>tp", function()
+      --   require("neotest").run.run(vim.uv.cwd())
+      -- end, { desc = "[T]est [P]project", noremap = true })
+      --
+      -- vim.keymap.set("n", "<leader>tf", function()
+      --   require("neotest").run.run(vim.fn.expand("%"))
+      -- end, { desc = "[T]est [F]ile", noremap = true })
+      --
+      -- vim.keymap.set("n", "<leader>tr", function()
+      --   require("neotest").run.run()
+      -- end, { desc = "[T]est [R]un", noremap = true })
+      --
+      -- vim.keymap.set("n", "<leader>tS", function()
+      --   require("neotest").run.stop()
+      -- end, { desc = "[T]est [S]top", noremap = true })
+      --
+      -- vim.keymap.set("n", "<leader>ta", function()
+      --   require("neotest").run.attach()
+      -- end, { desc = "[T]est [A]ttach", noremap = true })
+      --
+      -- vim.keymap.set("n", "<leader>ts", function()
+      --   require("neotest").summary.open()
+      -- end, { desc = "[T]est [S]ummary", noremap = true })
+      --
+      -- vim.keymap.set("n", "<leader>to", function()
+      --   require("neotest").output.open()
+      -- end, { desc = "[T]est output [O]pen", noremap = true })
+      --
+      -- vim.keymap.set("n", "<leader>tO", function()
+      --   require("neotest").output_panel.open()
+      -- end, { desc = "[T]est output panel [O]pen", noremap = true })
     end,
+  },
+  {
+    "rcasia/neotest-java",
   },
   {
     "nvim-neotest/neotest",
