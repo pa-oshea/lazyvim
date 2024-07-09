@@ -36,6 +36,7 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.util.dot" },
     -- import/override with your plugins
     { "max397574/better-escape.nvim", config = true },
+    { "stevearc/oil.nvim", config = true },
     { "akinsho/bufferline.nvim", enabled = false },
     { import = "plugins" },
   },
