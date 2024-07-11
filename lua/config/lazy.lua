@@ -14,11 +14,13 @@ require("lazy").setup({
     -- import any extras modules here
     -- { import = "lazyvim.plugins.extras.ui.edgy" },
     { import = "lazyvim.plugins.extras.coding.yanky" },
+    { import = "lazyvim.plugins.extras.coding.neogen" },
     { import = "lazyvim.plugins.extras.coding.mini-surround" },
     { import = "lazyvim.plugins.extras.dap.core" },
     { import = "lazyvim.plugins.extras.editor.illuminate" },
     { import = "lazyvim.plugins.extras.editor.fzf" },
     { import = "lazyvim.plugins.extras.editor.dial" },
+    { import = "lazyvim.plugins.extras.editor.mini-move" },
     -- { import = "lazyvim.plugins.extras.editor.outline" },
     { import = "lazyvim.plugins.extras.editor.aerial" },
     -- { import = "lazyvim.plugins.extras.coding.codeium" },
@@ -34,6 +36,8 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.lang.yaml" },
     { import = "lazyvim.plugins.extras.test.core" },
     { import = "lazyvim.plugins.extras.util.dot" },
+    { import = "lazyvim.plugins.extras.util.mini-hipatterns" },
+    { import = "lazyvim.plugins.extras.util.rest" },
     -- import/override with your plugins
     { "max397574/better-escape.nvim", config = true },
     { "akinsho/bufferline.nvim", enabled = false },
