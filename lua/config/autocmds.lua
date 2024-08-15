@@ -12,6 +12,15 @@ ac("BufRead", {
   end,
 })
 
+ac("FileType", {
+  pattern = "java",
+  callback = function()
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.expandtab = true
+  end,
+})
+
 local auto_close_filetype = {
   "lazy",
   "mason",
