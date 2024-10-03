@@ -3,3 +3,6 @@
 -- Add any additional options here
 vim.opt.shiftwidth = 4 -- Size of an indent
 vim.opt.tabstop = 4 -- Number of spaces tabs count for
+vim.opt.virtualedit = "block"
+vim.opt.inccommand = "split"
+vim.opt.ignorecase = true
