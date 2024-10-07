@@ -1,7 +1,8 @@
 return {
-  { "nvchad/volt", lazy = true },
-  { "nvchad/menu", lazy = true },
   "nvim-lua/plenary.nvim",
+  "nvchad/volt",
+  "nvchad/minty",
+  "nvchad/menu",
   {
     "nvchad/ui",
     config = function()

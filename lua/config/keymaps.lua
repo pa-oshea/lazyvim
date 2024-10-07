@@ -50,3 +50,11 @@ map("x", "X", '"_x', { desc = "Delete all characters in line" })
 -- Override nvim default behavior so it doesn't auto-yank when pasting on visual mode.
 map("x", "p", "P", { desc = "Paste content you've previourly yanked" })
 map("x", "P", "p", { desc = "Yank what you are going to override, then paste" })
+
+-- menus
+map({ "n", "v" }, "<RightMouse>", function()
+  vim.cmd.exec('"normal! \\<RightMouse>"')
+
+  local options = vim.bo.ft == "NvimTree" and "nvimtree" or "default"
+  require("menu").open(options, { mouse = true })
+end)
