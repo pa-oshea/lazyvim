@@ -1,22 +1,4 @@
 return {
-  -- {
-  --   "nvim-neo-tree/neo-tree.nvim",
-  --   opts = {
-  --     filesystem = {
-  --       group_empty_dirs = true,
-  --     },
-  --     git_status = {
-  --       group_empty_dirs = true,
-  --     },
-  --     buffer = {
-  --       group_empty_dirs = true,
-  --     },
-  --   },
-  -- },
-  -- {
-  --   "ibhagwan/fzf-lua",
-  --   opts = { winopts = { fullscreen = true } },
-  -- },
   {
     "hrsh7th/nvim-cmp",
     opts = function(_, opts)
@@ -64,7 +46,7 @@ return {
         update_root = false,
       },
       view = {
-        width = 50,
+        width = 80,
         preserve_window_proportions = true,
       },
       renderer = {
