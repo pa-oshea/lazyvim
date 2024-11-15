@@ -1,6 +1,6 @@
 local M = {}
 M.base46 = {
-  theme = "tundra",
+  theme = "catppuccin",
   theme_toggle = { "tundra", "catppuccin" },
 }
 M.ui = {
