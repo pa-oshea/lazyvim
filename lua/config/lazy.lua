@@ -44,9 +44,6 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.util.rest" },
     -- import/override with your plugins
     { "max397574/better-escape.nvim", config = true },
-    { "akinsho/bufferline.nvim", enabled = false },
-    { "nvim-lualine/lualine.nvim", enabled = false },
-    { "nvim-neo-tree/neo-tree.nvim", enabled = false },
     { import = "plugins" },
   },
   defaults = {
