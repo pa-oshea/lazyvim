@@ -45,4 +45,12 @@ return {
     opts = {},
     config = true,
   },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    opts = {
+      window = {
+        width = 80,
+      },
+    },
+  },
 }

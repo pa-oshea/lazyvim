@@ -21,6 +21,42 @@ ac("FileType", {
   end,
 })
 
+ac("FileType", {
+  pattern = "js",
+  callback = function()
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.expandtab = true
+  end,
+})
+
+ac("FileType", {
+  pattern = "ts",
+  callback = function()
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.expandtab = true
+  end,
+})
+
+ac("FileType", {
+  pattern = "jsx",
+  callback = function()
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.expandtab = true
+  end,
+})
+
+ac("FileType", {
+  pattern = "tsx",
+  callback = function()
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.expandtab = true
+  end,
+})
+
 local auto_close_filetype = {
   "lazy",
   "mason",
