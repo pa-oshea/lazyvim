@@ -1,5 +1,17 @@
 return {
   {
+    "suliatis/jumppack",
+    config = true,
+  },
+  {
+    "oribarilan/lensline.nvim",
+    tag = "2.0.0",
+    event = "LspAttach",
+    config = function()
+      require("lensline").setup()
+    end,
+  },
+  {
     "stevearc/oil.nvim",
     opts = {
       delete_to_trash = true,
@@ -49,8 +61,34 @@ return {
     "nvim-neo-tree/neo-tree.nvim",
     opts = {
       window = {
-        width = 80,
+        width = 65,
       },
     },
+  },
+  {
+    "andymass/vim-matchup",
+    event = "BufReadPost",
+    init = function()
+      vim.g.matchup_matchparen_offscreen = { method = "popup" }
+    end,
+  },
+  {
+    "folke/trouble.nvim",
+    keys = {
+      { "<leader>xs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols" },
+      { "<leader>xa", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "LSP definitions / refs" },
+    },
+  },
+  {
+    "nvim-lualine/lualine.nvim",
+    optional = true,
+    opts = function(_, opts)
+      -- Insert the overseer component just before the enconding section (lualine_x)
+      opts.sections = opts.sections or {}
+      opts.sections.lualine_x = opts.sections.lualine_x or {}
+      table.insert(opts.sections.lualine_x, 1, {
+        "overseer",
+      })
+    end,
   },
 }

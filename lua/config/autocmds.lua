@@ -6,81 +6,22 @@ local ag = vim.api.nvim_create_augroup
 
 -- Disable diagnostics in a .env file
 ac("BufRead", {
+  group = ag("disable_env_diagnostics", { clear = true }),
   pattern = ".env",
   callback = function()
-    vim.diagnostic.enable(false)
+    vim.diagnostic.enable(false, { bufnr = 0 })
   end,
 })
 
 ac("FileType", {
-  pattern = "java",
+  group = ag("two_space_indent", { clear = true }),
+  pattern = { "java", "javascript", "typescript", "typescriptreact", "javascriptreact" },
   callback = function()
     vim.opt_local.tabstop = 2
     vim.opt_local.shiftwidth = 2
     vim.opt_local.expandtab = true
   end,
 })
-
-ac("FileType", {
-  pattern = "js",
-  callback = function()
-    vim.opt_local.tabstop = 2
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.expandtab = true
-  end,
-})
-
-ac("FileType", {
-  pattern = "ts",
-  callback = function()
-    vim.opt_local.tabstop = 2
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.expandtab = true
-  end,
-})
-
-ac("FileType", {
-  pattern = "jsx",
-  callback = function()
-    vim.opt_local.tabstop = 2
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.expandtab = true
-  end,
-})
-
-ac("FileType", {
-  pattern = "tsx",
-  callback = function()
-    vim.opt_local.tabstop = 2
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.expandtab = true
-  end,
-})
-
-local auto_close_filetype = {
-  "lazy",
-  "mason",
-  "lspinfo",
-  "toggleterm",
-  "null-ls-info",
-  "TelescopePrompt",
-  "notify",
-}
-
--- Auto close window when leaving
--- ac("BufLeave", {
---   group = ag("lazyvim_auto_close_win", { clear = true }),
---   callback = function(event)
---     local ft = vim.api.nvim_buf_get_option(event.buf, "filetype")
---
---     if vim.fn.index(auto_close_filetype, ft) ~= -1 then
---       local winids = vim.fn.win_findbuf(event.buf)
---       for _, win in pairs(winids) do
---         vim.api.nvim_win_close(win, true)
---       end
---     end
---   end,
--- })
 
 -- Disable leader and localleader for some filetypes
 ac("FileType", {

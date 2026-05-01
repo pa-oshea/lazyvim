@@ -11,23 +11,30 @@ vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 require("lazy").setup({
   spec = {
     -- add LazyVim and import its plugins
-    { "LazyVim/LazyVim", import = "lazyvim.plugins", opts = { colorscheme = "catppuccin" } },
+    { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     -- import any extras modules here
-    -- { import = "lazyvim.plugins.extras.ui.edgy" },
+    -- coding
     { import = "lazyvim.plugins.extras.coding.yanky" },
     { import = "lazyvim.plugins.extras.coding.neogen" },
     { import = "lazyvim.plugins.extras.coding.mini-surround" },
+
+    -- dap
     { import = "lazyvim.plugins.extras.dap.core" },
+
+    -- editor
     { import = "lazyvim.plugins.extras.editor.illuminate" },
-    -- { import = "lazyvim.plugins.extras.editor.fzf" },
     { import = "lazyvim.plugins.extras.editor.dial" },
     { import = "lazyvim.plugins.extras.editor.mini-move" },
-    -- { import = "lazyvim.plugins.extras.editor.outline" },
     { import = "lazyvim.plugins.extras.editor.aerial" },
-    -- { import = "lazyvim.plugins.extras.coding.codeium" },
+    { import = "lazyvim.plugins.extras.editor.harpoon2" },
+    { import = "lazyvim.plugins.extras.editor.inc-rename" },
+    { import = "lazyvim.plugins.extras.editor.overseer" },
+
+    -- ui
     { import = "lazyvim.plugins.extras.ui.mini-animate" },
     { import = "lazyvim.plugins.extras.ui.mini-indentscope" },
-    { import = "lazyvim.plugins.extras.editor.harpoon2" },
+
+    -- lang
     { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.lang.java" },
     { import = "lazyvim.plugins.extras.lang.rust" },
@@ -38,11 +45,21 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.lang.helm" },
     { import = "lazyvim.plugins.extras.lang.json" },
     { import = "lazyvim.plugins.extras.lang.yaml" },
+    { import = "lazyvim.plugins.extras.lang.tailwind" },
     { import = "lazyvim.plugins.extras.lang.markdown" },
+
+    -- formatting / linting
+    { import = "lazyvim.plugins.extras.formatting.prettier" },
+
+    -- test
     { import = "lazyvim.plugins.extras.test.core" },
+
+    -- util
     { import = "lazyvim.plugins.extras.util.dot" },
     { import = "lazyvim.plugins.extras.util.mini-hipatterns" },
     { import = "lazyvim.plugins.extras.util.rest" },
+    { import = "lazyvim.plugins.extras.util.octo" },
+    { import = "lazyvim.plugins.extras.util.project" },
     -- import/override with your plugins
     { "max397574/better-escape.nvim", config = true },
     { import = "plugins" },
@@ -56,7 +73,7 @@ require("lazy").setup({
     version = false, -- always use the latest git commit
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
-  install = { colorscheme = { "nvchad" } },
+  install = { colorscheme = { "tokyonight", "habamax" } },
   checker = { enabled = true, notify = true }, -- automatically check for plugin updates
   performance = {
     rtp = {

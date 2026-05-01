@@ -59,4 +59,16 @@ return {
     },
     config = true,
   },
+  {
+    "f-person/git-blame.nvim",
+    event = "BufReadPost",
+    opts = {
+      enabled = false,
+      display_virtual_text = true,
+      date_format = "%d/%m/%y",
+    },
+    keys = {
+      { "<leader>glb", "<cmd>GitBlameToggle<cr>", desc = "Toggle git blame" },
+    },
+  },
 }
