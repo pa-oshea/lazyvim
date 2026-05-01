@@ -1,87 +1,272 @@
--- Helper functions defined locally so they don't leak into the plugin spec
+-- ~/.config/nvim/lua/plugins/neorg.lua
+
+-- ── Config ────────────────────────────────────────────────────────────────────
+
+local NOTES_ROOT = vim.fn.expand("~/work/notes")
+
 local function notes_root()
-  return vim.fn.expand("~/work/notes")
+  return NOTES_ROOT
 end
 
--- Define functions locally
-local fzf_helpers = {
-  find_notes = function()
-    require("fzf-lua").files({
-      cwd = notes_root(),
-      prompt = "Notes ❯ ",
-      fd_opts = "--type f --extension norg",
-      formatter = "path.filename_first",
-    })
-  end,
-  grep_notes = function()
-    require("fzf-lua").live_grep({
-      cwd = notes_root(),
-      prompt = "Grep notes ❯ ",
-      rg_opts = "--glob '*.norg' --column --line-number --no-heading --color=always",
-    })
-  end,
-  find_permanent = function()
-    require("fzf-lua").files({
-      cwd = notes_root() .. "/permanent",
-      prompt = "Permanent ❯ ",
-      fd_opts = "--type f --extension norg",
-      formatter = "path.filename_first",
-    })
-  end,
-  find_by_tag = function()
-    require("fzf-lua").grep({
-      cwd = notes_root(),
-      search = "tags:.*\\S",
-      rg_opts = "--glob '*.norg' --no-heading --color=always",
-      prompt = "Tags ❯ ",
-    })
-  end,
-  insert_link = function()
-    require("fzf-lua").files({
-      cwd = notes_root(),
-      prompt = "Link to ❯ ",
-      fd_opts = "--type f --extension norg",
-      actions = {
-        ["default"] = function(selected)
-          if not selected or #selected == 0 then
-            return
-          end
-          local abs = selected[1]
-          local root = notes_root()
-          local rel = abs:gsub(vim.pesc(root) .. "/", ""):gsub("%.norg$", "")
-          local title = (rel:match("([^/]+)$") or rel):gsub("^%d%d%d%d%d%d%d%d%d%d%d%d%d%d%-", ""):gsub("-", " ")
-          local link = ("{:%s:}[%s]"):format(rel, title)
-          local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-          local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-          vim.api.nvim_buf_set_lines(0, row - 1, row, false, { line:sub(1, col) .. link .. line:sub(col + 1) })
-          vim.api.nvim_win_set_cursor(0, { row, col + #link })
-        end,
-      },
-    })
-  end,
-}
+-- ── Template loader ───────────────────────────────────────────────────────────
+-- Reads from ~/work/notes/templates/*.norg
+-- To change a template, edit the .norg file — no Lua changes needed.
 
--- Autocmd for buffer-local maps
+local function load_template(name)
+  local path = notes_root() .. "/templates/" .. name .. ".norg"
+  local f = io.open(path, "r")
+  if not f then
+    vim.notify("Template not found: " .. path, vim.log.levels.WARN)
+    return {}
+  end
+  local lines = {}
+  for line in f:lines() do
+    lines[#lines + 1] = line
+  end
+  f:close()
+  return lines
+end
+
+-- Replace {placeholder} tokens in a list of lines
+local function apply_tokens(lines, tokens)
+  local result = {}
+  for _, line in ipairs(lines) do
+    for key, val in pairs(tokens) do
+      line = line:gsub("{" .. key .. "}", val)
+    end
+    result[#result + 1] = line
+  end
+  return result
+end
+
+-- ── Open helper ───────────────────────────────────────────────────────────────
+-- Opens a file and inserts lines only if the buffer is new/empty.
+-- cursor_line: line number to jump to after insertion (optional)
+
+local function open_with_template(path, lines, cursor_line)
+  vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
+  vim.cmd("edit " .. vim.fn.fnameescape(path))
+  local existing = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  local is_empty = #existing == 0 or (#existing == 1 and existing[1] == "")
+  if is_empty and #lines > 0 then
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+    if cursor_line then
+      vim.cmd("normal! " .. cursor_line .. "G$")
+    end
+  end
+end
+
+-- ── Note creation ─────────────────────────────────────────────────────────────
+
+local neorg_helpers = {}
+
+function neorg_helpers.create_permanent_note()
+  local id = os.date("%Y%m%d%H%M%S")
+  local title = vim.fn.input("Note title: ")
+  if title == "" then
+    return
+  end
+  local slug = title:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
+  local path = notes_root() .. "/permanent/" .. id .. "-" .. slug .. ".norg"
+  local lines = apply_tokens(load_template("permanent"), {
+    title = title,
+    id = id,
+    date = os.date("%Y-%m-%d"),
+  })
+  open_with_template(path, lines, 13)
+end
+
+function neorg_helpers.create_area()
+  local name = vim.fn.input("Area name: ")
+  if name == "" then
+    return
+  end
+  local slug = name:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
+  local path = notes_root() .. "/areas/" .. slug .. "/index.norg"
+  local lines = apply_tokens(load_template("area"), {
+    area = name,
+    date = os.date("%Y-%m-%d"),
+  })
+  open_with_template(path, lines, 11)
+end
+
+function neorg_helpers.create_project()
+  local name = vim.fn.input("Project name: ")
+  if name == "" then
+    return
+  end
+  local slug = name:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
+  local base = notes_root() .. "/projects/" .. slug
+
+  -- Create todo.norg stub if it doesn't exist yet
+  local todo_path = base .. "/todo.norg"
+  if vim.fn.filereadable(todo_path) == 0 then
+    local todo_lines = apply_tokens(load_template("todo"), {
+      title = name,
+      date = os.date("%Y-%m-%d"),
+    })
+    -- todo template is optional — fall back to minimal stub
+    if #todo_lines == 0 then
+      todo_lines = {
+        "@document.meta",
+        "title: " .. name .. " — TODO",
+        "created: " .. os.date("%Y-%m-%d"),
+        "tags: [project, todo]",
+        "@end",
+        "",
+        "* " .. name .. " TODO",
+        "",
+        "** In Progress",
+        "",
+        "   - ( ) ",
+        "",
+        "** Up Next",
+        "",
+        "   - ( ) ",
+        "",
+        "** Done",
+        "",
+        "   - (x) ",
+      }
+    end
+    vim.fn.mkdir(base, "p")
+    local f = io.open(todo_path, "w")
+    if f then
+      f:write(table.concat(todo_lines, "\n"))
+      f:close()
+    end
+  end
+
+  local index_lines = apply_tokens(load_template("area"), {
+    area = name,
+    date = os.date("%Y-%m-%d"),
+  })
+  open_with_template(base .. "/index.norg", index_lines, 11)
+end
+
+-- Journal: Neorg's default path is fleeting/YYYY/MM/DD.norg
+-- We open that same path and insert the fleeting template if it's a new file.
+function neorg_helpers.journal_today()
+  local y, m, d = os.date("%Y"), os.date("%m"), os.date("%d")
+  local date = y .. "-" .. m .. "-" .. d
+  local path = notes_root() .. "/fleeting/" .. y .. "/" .. m .. "/" .. d .. ".norg"
+  local lines = apply_tokens(load_template("fleeting"), {
+    date = date,
+  })
+  open_with_template(path, lines, 15)
+end
+
+function neorg_helpers.journal_yesterday()
+  local t = os.time() - 86400
+  local y, m, d = os.date("%Y", t), os.date("%m", t), os.date("%d", t)
+  local date = y .. "-" .. m .. "-" .. d
+  local path = notes_root() .. "/fleeting/" .. y .. "/" .. m .. "/" .. d .. ".norg"
+  local lines = apply_tokens(load_template("fleeting"), {
+    date = date,
+  })
+  open_with_template(path, lines, 15)
+end
+
+-- ── fzf-lua pickers ───────────────────────────────────────────────────────────
+
+local fzf_helpers = {}
+
+function fzf_helpers.find_notes()
+  require("fzf-lua").files({
+    cwd = notes_root(),
+    prompt = "Notes ❯ ",
+    fd_opts = "--type f --extension norg",
+  })
+end
+
+function fzf_helpers.grep_notes()
+  require("fzf-lua").live_grep({
+    cwd = notes_root(),
+    prompt = "Grep notes ❯ ",
+    rg_opts = "--glob '*.norg' --column --line-number --no-heading --color=always",
+  })
+end
+
+function fzf_helpers.find_permanent()
+  require("fzf-lua").files({
+    cwd = notes_root() .. "/permanent",
+    prompt = "Permanent ❯ ",
+    fd_opts = "--type f --extension norg",
+  })
+end
+
+function fzf_helpers.find_by_tag()
+  require("fzf-lua").grep({
+    cwd = notes_root(),
+    search = "tags:.*\\S",
+    rg_opts = "--glob '*.norg' --column --line-number --no-heading --color=always",
+    prompt = "Tags ❯ ",
+  })
+end
+
+function fzf_helpers.insert_link()
+  require("fzf-lua").files({
+    cwd = notes_root(),
+    prompt = "Link to ❯ ",
+    fd_opts = "--type f --extension norg",
+    -- path_shorten disabled so selected[1] is the full relative path
+    fzf_opts = { ["--filepath-prefix"] = false },
+    actions = {
+      ["default"] = function(selected)
+        if not selected or #selected == 0 then
+          return
+        end
+        -- trim leading/trailing whitespace first, then strip any icon prefix
+        -- (icon is non-ascii, path always starts with a regular ascii letter)
+        local raw = selected[1]:match("^%s*(.-)%s*$")
+        raw = raw:match("[%a%.][^%s]*%.norg$") or raw
+        local abs = vim.fn.fnamemodify(notes_root() .. "/" .. raw, ":p")
+        local rel =
+          abs:gsub(vim.pesc(vim.fn.fnamemodify(notes_root(), ":p")), ""):gsub("%.norg$", ""):match("^[/]*(.*)") -- strip any leading slash
+        local title = (rel:match("([^/]+)$") or rel):gsub("^%d%d%d%d%d%d%d%d%d%d%d%d%d%d%-", ""):gsub("-", " ")
+        -- Prefix with $/ to anchor to workspace root so the link works
+        -- regardless of which subdirectory the current file lives in.
+        -- Without this, opening from permanent/*.norg resolves permanent/foo
+        -- as permanent/permanent/foo.
+        local link = ("{:$/%s:}[%s]"):format(rel, title)
+        local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+        local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
+        vim.api.nvim_buf_set_lines(0, row - 1, row, false, { line:sub(1, col) .. link .. line:sub(col + 1) })
+        vim.api.nvim_win_set_cursor(0, { row, col + #link })
+      end,
+    },
+  })
+end
+
+-- ── Buffer-local maps for .norg files ────────────────────────────────────────
+
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("NeorgFzf", { clear = true }),
   pattern = "norg",
   callback = function()
-    local o = { buffer = true, silent = true }
-    vim.keymap.set("n", "<localleader>l", fzf_helpers.insert_link, { buffer = true, desc = "Notes: insert link" })
-    vim.keymap.set("n", "<localleader>f", fzf_helpers.find_notes, { buffer = true, desc = "Notes: find note" })
-    vim.keymap.set("n", "<localleader>g", fzf_helpers.grep_notes, { buffer = true, desc = "Notes: grep notes" })
-    vim.keymap.set("n", "<localleader>p", fzf_helpers.find_permanent, { buffer = true, desc = "Notes: find permanent" })
+    local function map(key, fn, desc)
+      vim.keymap.set("n", key, fn, { buffer = true, silent = true, desc = desc })
+    end
+    map("<localleader>l", fzf_helpers.insert_link, "Notes: insert link")
+    map("<localleader>f", fzf_helpers.find_notes, "Notes: find note")
+    map("<localleader>g", fzf_helpers.grep_notes, "Notes: grep notes")
+    map("<localleader>p", fzf_helpers.find_permanent, "Notes: find permanent")
   end,
 })
 
--- The Plugin Spec
+-- ── Plugin spec ───────────────────────────────────────────────────────────────
+
 return {
   {
     "nvim-neorg/neorg",
     lazy = false,
     version = "*",
-    config = true,
     dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-neorg/lua-utils.nvim",
+      "pysan3/pathlib.nvim",
+      "nvim-neotest/nvim-nio",
+      "MunifTanjim/nui.nvim",
       "nvim-neorg/tree-sitter-norg",
       "nvim-neorg/tree-sitter-norg-meta",
     },
@@ -109,49 +294,30 @@ return {
         ["core.summary"] = {},
       },
     },
+    config = function(_, opts)
+      require("neorg").setup(opts)
+    end,
+
     keys = {
+      -- Workspaces
       { "<leader>mw", "<cmd>Neorg workspace brain<cr>", desc = "Notes: brain workspace" },
       { "<leader>mc", "<cmd>Neorg workspace cora<cr>", desc = "Notes: CORA workspace" },
       { "<leader>mi", "<cmd>Neorg index<cr>", desc = "Notes: open index" },
-      { "<leader>mj", "<cmd>Neorg journal today<cr>", desc = "Notes: today's fleeting" },
+
+      -- Capture
+      { "<leader>mj", neorg_helpers.journal_today, desc = "Notes: today's fleeting" },
+      { "<leader>my", neorg_helpers.journal_yesterday, desc = "Notes: yesterday's fleeting" },
+
+      -- Creation
+      { "<leader>mz", neorg_helpers.create_permanent_note, desc = "Notes: new permanent note" },
+      { "<leader>ma", neorg_helpers.create_area, desc = "Notes: new area" },
+      { "<leader>mr", neorg_helpers.create_project, desc = "Notes: new project" },
+
+      -- fzf pickers
       { "<leader>mf", fzf_helpers.find_notes, desc = "Notes: find note (fzf)" },
       { "<leader>mg", fzf_helpers.grep_notes, desc = "Notes: grep notes (fzf)" },
       { "<leader>mp", fzf_helpers.find_permanent, desc = "Notes: find permanent (fzf)" },
       { "<leader>ms", fzf_helpers.find_by_tag, desc = "Notes: find by tag (fzf)" },
-      -- New Permanent Note Logic
-      {
-        "<leader>mz",
-        desc = "Notes: new permanent ZK note",
-        callback = function()
-          local id = os.date("%Y%m%d%H%M%S")
-          local title = vim.fn.input("Note title: ")
-          if title == "" then
-            return
-          end
-          local slug = title:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
-          local path = vim.fn.expand("~/notes/permanent/") .. id .. "-" .. slug .. ".norg"
-          vim.cmd("edit " .. vim.fn.fnameescape(path))
-          vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-            "@document.meta",
-            "title: " .. title,
-            "id: " .. id,
-            "tags: []",
-            "created: " .. os.date("%Y-%m-%d"),
-            "@end",
-            "",
-            "* " .. title,
-            "",
-            "** Summary",
-            "",
-            "** Detail",
-            "",
-            "** Connections",
-            "",
-            "** References",
-          })
-          vim.cmd("normal! 11G$")
-        end,
-      },
     },
   },
 }
