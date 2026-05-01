@@ -80,21 +80,10 @@ return {
     "nvim-neorg/neorg",
     lazy = false,
     version = "*",
-    -- REMOVED build = ":Neorg sync-parsers" to prevent Nix/Library errors
+    config = true,
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-neorg/lua-utils.nvim",
-      "pysan3/pathlib.nvim",
-      "nvim-neotest/nvim-nio",
-      "MunifTanjim/nui.nvim",
-      {
-        "nvim-treesitter/nvim-treesitter",
-        opts = function(_, opts)
-          if type(opts.ensure_installed) == "table" then
-            vim.list_extend(opts.ensure_installed, { "norg" })
-          end
-        end,
-      },
+      "nvim-neorg/tree-sitter-norg",
+      "nvim-neorg/tree-sitter-norg-meta",
     },
     opts = {
       load = {
@@ -120,9 +109,6 @@ return {
         ["core.summary"] = {},
       },
     },
-    config = function(_, opts)
-      require("neorg").setup(opts)
-    end,
     keys = {
       { "<leader>mw", "<cmd>Neorg workspace brain<cr>", desc = "Notes: brain workspace" },
       { "<leader>mc", "<cmd>Neorg workspace cora<cr>", desc = "Notes: CORA workspace" },
