@@ -1,6 +1,6 @@
 -- Helper functions defined locally so they don't leak into the plugin spec
 local function notes_root()
-  return vim.fn.expand("~/notes")
+  return vim.fn.expand("~/work/notes")
 end
 
 -- Define functions locally
@@ -92,9 +92,9 @@ return {
         ["core.dirman"] = {
           config = {
             workspaces = {
-              brain = "~/notes",
-              cora = "~/notes/projects/cora",
-              fleeting = "~/notes/fleeting",
+              brain = "~/work/notes",
+              cora = "~/work/notes/projects/cora",
+              fleeting = "~/work/notes/fleeting",
             },
             default_workspace = "brain",
             index = "index.norg",
