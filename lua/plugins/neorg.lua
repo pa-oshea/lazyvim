@@ -196,11 +196,41 @@ function fzf_helpers.find_permanent()
 end
 
 function fzf_helpers.find_by_tag()
-  require("fzf-lua").grep({
-    cwd = notes_root(),
-    search = "tags:.*\\S",
-    rg_opts = "--glob '*.norg' --column --line-number --no-heading --color=always",
-    prompt = "Tags ❯ ",
+  local fzf = require("fzf-lua")
+  -- Step 1: collect all unique tags across all notes
+  local handle = io.popen(
+    "rg --glob '*.norg' --no-filename --no-line-number 'tags: \\[' "
+      .. notes_root()
+      .. " | grep -oP '(?<=\\[)[^\\]]+' | tr ',' '\\n' | sed 's/^[[:space:]]*//' | sort -u"
+  )
+  if not handle then
+    return
+  end
+  local tags = {}
+  for line in handle:lines() do
+    local t = line:match("^%s*(.-)%s*$")
+    if t and t ~= "" then
+      tags[#tags + 1] = t
+    end
+  end
+  handle:close()
+
+  -- Step 2: pick a tag, then grep for files containing it
+  fzf.fzf_exec(tags, {
+    prompt = "Tag ❯ ",
+    actions = {
+      ["default"] = function(selected)
+        if not selected or #selected == 0 then
+          return
+        end
+        fzf.live_grep({
+          cwd = notes_root(),
+          prompt = "Notes tagged [" .. selected[1] .. "] ❯ ",
+          search = selected[1],
+          rg_opts = "--glob '*.norg' --column --line-number --no-heading --color=always",
+        })
+      end,
+    },
   })
 end
 
@@ -278,8 +308,8 @@ return {
           config = {
             workspaces = {
               brain = "~/work/notes",
-              cora = "~/work/notes/projects/cora",
-              fleeting = "~/work/notes/fleeting",
+              -- cora = "~/work/notes/projects/cora",
+              -- fleeting = "~/work/notes/fleeting",
             },
             default_workspace = "brain",
             index = "index.norg",
