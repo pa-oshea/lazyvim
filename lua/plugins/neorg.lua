@@ -189,6 +189,93 @@ function neorg_helpers.create_domain_note()
   open_with_template(path, lines, 13)
 end
 
+function neorg_helpers.regenerate_index()
+  local current_file = vim.api.nvim_buf_get_name(0)
+  local dir = vim.fn.fnamemodify(current_file, ":h")
+  local notes_root_abs = vim.fn.fnamemodify(notes_root(), ":p"):gsub("/$", "")
+
+  -- Derive the tag from the area/project folder name
+  -- e.g. .../areas/dsa/index.norg → tag = "dsa"
+  local tag = dir:match("/areas/([^/]+)$") or dir:match("/projects/([^/]+)$")
+  if not tag then
+    vim.notify("Not inside an areas/ or projects/ index — cannot derive tag", vim.log.levels.WARN)
+    return
+  end
+
+  -- rg: find all .norg files whose tags line contains this tag
+  local cmd = string.format("rg --glob '*.norg' --files-with-matches 'tags:.*%s' %s", tag, notes_root_abs)
+  local handle = io.popen(cmd)
+  if not handle then
+    vim.notify("rg failed", vim.log.levels.ERROR)
+    return
+  end
+
+  local links = {}
+  for filepath in handle:lines() do
+    -- Skip index files themselves
+    if not filepath:match("index%.norg$") then
+      -- Read title from @document.meta if present, else derive from filename
+      local title = nil
+      local f = io.open(filepath, "r")
+      if f then
+        for line in f:lines() do
+          local t = line:match("^title:%s*(.+)$")
+          if t then
+            title = t
+            break
+          end
+          if line:match("^@end") then
+            break
+          end
+        end
+        f:close()
+      end
+      if not title then
+        title = vim.fn.fnamemodify(filepath, ":t:r"):gsub("^%d%d%d%d%d%d%d%d%d%d%d%d%d%d%-", ""):gsub("-", " ")
+      end
+      -- Build workspace-root-anchored link
+      local rel = filepath:gsub(vim.pesc(notes_root_abs), ""):gsub("%.norg$", ""):match("^[/]*(.*)")
+      links[#links + 1] = "   - {:$/" .. rel .. ":}[" .. title .. "]"
+    end
+  end
+  handle:close()
+
+  table.sort(links)
+
+  if #links == 0 then
+    vim.notify("No notes found tagged [" .. tag .. "]", vim.log.levels.WARN)
+    return
+  end
+
+  -- Rewrite the ** Notes section in the buffer
+  local buf_lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  local section_start, section_end = nil, nil
+  for i, line in ipairs(buf_lines) do
+    if line:match("^%*%*%s+Notes") then
+      section_start = i
+    elseif section_start and line:match("^%*%*%s+") and i > section_start then
+      section_end = i - 1
+      break
+    end
+  end
+
+  local new_block = { "** Notes", "" }
+  for _, l in ipairs(links) do
+    new_block[#new_block + 1] = l
+  end
+  new_block[#new_block + 1] = ""
+
+  if section_start then
+    section_end = section_end or #buf_lines
+    vim.api.nvim_buf_set_lines(0, section_start - 1, section_end, false, new_block)
+  else
+    vim.api.nvim_buf_set_lines(0, -1, -1, false, { "" })
+    vim.api.nvim_buf_set_lines(0, -1, -1, false, new_block)
+  end
+
+  vim.notify(string.format("Index [%s]: %d notes linked", tag, #links), vim.log.levels.INFO)
+end
+
 -- ── fzf-lua pickers ───────────────────────────────────────────────────────────
 
 local fzf_helpers = {}
