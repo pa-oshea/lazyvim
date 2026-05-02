@@ -167,6 +167,28 @@ function neorg_helpers.journal_yesterday()
   open_with_template(path, lines, 15)
 end
 
+function neorg_helpers.create_domain_note()
+  local project = vim.fn.input("Project (default: cora): ")
+  if project == "" then
+    project = "cora"
+  end
+  local slug_project = project:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
+
+  local title = vim.fn.input("Domain note title: ")
+  if title == "" then
+    return
+  end
+  local slug = title:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
+
+  local path = notes_root() .. "/projects/" .. slug_project .. "/domain/" .. slug .. ".norg"
+  local lines = apply_tokens(load_template("permanent"), {
+    title = title,
+    id = os.date("%Y%m%d%H%M%S"),
+    date = os.date("%Y-%m-%d"),
+  })
+  open_with_template(path, lines, 13)
+end
+
 -- ── fzf-lua pickers ───────────────────────────────────────────────────────────
 
 local fzf_helpers = {}
@@ -268,26 +290,20 @@ function fzf_helpers.insert_link()
   })
 end
 
-function neorg_helpers.create_domain_note()
-  local project = vim.fn.input("Project (default: cora): ")
-  if project == "" then
-    project = "cora"
-  end
-  local slug_project = project:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
-
-  local title = vim.fn.input("Domain note title: ")
-  if title == "" then
-    return
-  end
-  local slug = title:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
-
-  local path = notes_root() .. "/projects/" .. slug_project .. "/domain/" .. slug .. ".norg"
-  local lines = apply_tokens(load_template("permanent"), {
-    title = title,
-    id = os.date("%Y%m%d%H%M%S"),
-    date = os.date("%Y-%m-%d"),
+function fzf_helpers.find_domain_notes()
+  require("fzf-lua").files({
+    cwd = notes_root() .. "/projects",
+    prompt = "Domain ❯ ",
+    fd_opts = "--type f --extension norg --search-path domain",
   })
-  open_with_template(path, lines, 13)
+end
+
+function fzf_helpers.find_area_indexes()
+  require("fzf-lua").files({
+    cwd = notes_root() .. "/areas",
+    prompt = "Area ❯ ",
+    fd_opts = "--type f --extension norg --name index.norg",
+  })
 end
 
 -- ── Buffer-local maps for .norg files ────────────────────────────────────────
@@ -303,6 +319,7 @@ vim.api.nvim_create_autocmd("FileType", {
     map("<localleader>f", fzf_helpers.find_notes, "Notes: find note")
     map("<localleader>g", fzf_helpers.grep_notes, "Notes: grep notes")
     map("<localleader>p", fzf_helpers.find_permanent, "Notes: find permanent")
+    map("<localleader>i", neorg_helpers.regenerate_index, "Notes: regenerate index")
   end,
 })
 
@@ -365,12 +382,15 @@ return {
       { "<leader>ma", neorg_helpers.create_area, desc = "Notes: new area" },
       { "<leader>mr", neorg_helpers.create_project, desc = "Notes: new project" },
       { "<leader>md", neorg_helpers.create_domain_note, desc = "Notes: new domain note" },
+      { "<leader>mI", neorg_helpers.regenerate_index, desc = "Notes: regenerate index" },
 
       -- fzf pickers
       { "<leader>mf", fzf_helpers.find_notes, desc = "Notes: find note (fzf)" },
       { "<leader>mg", fzf_helpers.grep_notes, desc = "Notes: grep notes (fzf)" },
       { "<leader>mp", fzf_helpers.find_permanent, desc = "Notes: find permanent (fzf)" },
       { "<leader>ms", fzf_helpers.find_by_tag, desc = "Notes: find by tag (fzf)" },
+      { "<leader>mD", fzf_helpers.find_domain_notes, desc = "Notes: find domain note (fzf)" },
+      { "<leader>mA", fzf_helpers.find_area_indexes, desc = "Notes: find area index (fzf)" },
     },
   },
 }
