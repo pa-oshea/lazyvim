@@ -268,6 +268,28 @@ function fzf_helpers.insert_link()
   })
 end
 
+function neorg_helpers.create_domain_note()
+  local project = vim.fn.input("Project (default: cora): ")
+  if project == "" then
+    project = "cora"
+  end
+  local slug_project = project:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
+
+  local title = vim.fn.input("Domain note title: ")
+  if title == "" then
+    return
+  end
+  local slug = title:lower():gsub("%s+", "-"):gsub("[^a-z0-9%-]", "")
+
+  local path = notes_root() .. "/projects/" .. slug_project .. "/domain/" .. slug .. ".norg"
+  local lines = apply_tokens(load_template("permanent"), {
+    title = title,
+    id = os.date("%Y%m%d%H%M%S"),
+    date = os.date("%Y-%m-%d"),
+  })
+  open_with_template(path, lines, 13)
+end
+
 -- ── Buffer-local maps for .norg files ────────────────────────────────────────
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -342,6 +364,7 @@ return {
       { "<leader>mz", neorg_helpers.create_permanent_note, desc = "Notes: new permanent note" },
       { "<leader>ma", neorg_helpers.create_area, desc = "Notes: new area" },
       { "<leader>mr", neorg_helpers.create_project, desc = "Notes: new project" },
+      { "<leader>md", neorg_helpers.create_domain_note, desc = "Notes: new domain note" },
 
       -- fzf pickers
       { "<leader>mf", fzf_helpers.find_notes, desc = "Notes: find note (fzf)" },
