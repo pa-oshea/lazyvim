@@ -455,29 +455,33 @@ return {
     end,
 
     keys = {
-      -- Workspaces
-      { "<leader>mw", "<cmd>Neorg workspace brain<cr>", desc = "Notes: brain workspace" },
-      { "<leader>mc", "<cmd>Neorg workspace cora<cr>", desc = "Notes: CORA workspace" },
       { "<leader>mi", "<cmd>Neorg index<cr>", desc = "Notes: open index" },
 
       -- Capture
-      { "<leader>mj", neorg_helpers.journal_today, desc = "Notes: today's fleeting" },
-      { "<leader>my", neorg_helpers.journal_yesterday, desc = "Notes: yesterday's fleeting" },
+      { "<leader>mj", neorg_helpers.journal_today, desc = "Create: today's fleeting" },
+      { "<leader>my", neorg_helpers.journal_yesterday, desc = "Create: yesterday's fleeting" },
+      {
+        "<leader>mt",
+        function()
+          vim.cmd("edit " .. vim.fn.expand("~/work/notes/personal-todo.norg"))
+        end,
+        desc = "Create: personal TODO",
+      },
 
       -- Creation
-      { "<leader>mz", neorg_helpers.create_permanent_note, desc = "Notes: new permanent note" },
-      { "<leader>ma", neorg_helpers.create_area, desc = "Notes: new area" },
-      { "<leader>mr", neorg_helpers.create_project, desc = "Notes: new project" },
-      { "<leader>md", neorg_helpers.create_domain_note, desc = "Notes: new domain note" },
+      { "<leader>mz", neorg_helpers.create_permanent_note, desc = "New: permanent note" },
+      { "<leader>ma", neorg_helpers.create_area, desc = "New: area" },
+      { "<leader>mr", neorg_helpers.create_project, desc = "New: project" },
+      { "<leader>md", neorg_helpers.create_domain_note, desc = "New: domain note" },
       { "<leader>mI", neorg_helpers.regenerate_index, desc = "Notes: regenerate index" },
 
       -- fzf pickers
-      { "<leader>mf", fzf_helpers.find_notes, desc = "Notes: find note (fzf)" },
-      { "<leader>mg", fzf_helpers.grep_notes, desc = "Notes: grep notes (fzf)" },
-      { "<leader>mp", fzf_helpers.find_permanent, desc = "Notes: find permanent (fzf)" },
-      { "<leader>ms", fzf_helpers.find_by_tag, desc = "Notes: find by tag (fzf)" },
-      { "<leader>mD", fzf_helpers.find_domain_notes, desc = "Notes: find domain note (fzf)" },
-      { "<leader>mA", fzf_helpers.find_area_indexes, desc = "Notes: find area index (fzf)" },
+      { "<leader>mf", fzf_helpers.find_notes, desc = "Find: find note (fzf)" },
+      { "<leader>mg", fzf_helpers.grep_notes, desc = "Find: grep notes (fzf)" },
+      { "<leader>mp", fzf_helpers.find_permanent, desc = "Find: permanent (fzf)" },
+      { "<leader>ms", fzf_helpers.find_by_tag, desc = "Find: find by tag (fzf)" },
+      { "<leader>mD", fzf_helpers.find_domain_notes, desc = "Find: domain note (fzf)" },
+      { "<leader>mA", fzf_helpers.find_area_indexes, desc = "Find: area index (fzf)" },
     },
   },
 }
