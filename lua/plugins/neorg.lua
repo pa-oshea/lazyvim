@@ -410,6 +410,19 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- ── Auto-Export to Markdown on Save ──────────────────────────────────────────
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+  group = vim.api.nvim_create_augroup("NeorgExportSameDir", { clear = true }),
+  pattern = "*.norg",
+  callback = function()
+    local current_file = vim.api.nvim_buf_get_name(0)
+    -- Export to the same path but with .md extension
+    local target_file = current_file:gsub("%.norg$", ".md")
+    vim.cmd("Neorg export to-file " .. vim.fn.fnameescape(target_file))
+  end,
+})
+
 -- ── Plugin spec ───────────────────────────────────────────────────────────────
 
 return {
