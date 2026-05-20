@@ -2,14 +2,14 @@
 
 -- ── Config ────────────────────────────────────────────────────────────────────
 
-local NOTES_ROOT = vim.fn.expand("~/work/notes")
+local NOTES_ROOT = vim.fn.expand("~/personal/notes")
 
 local function notes_root()
   return NOTES_ROOT
 end
 
 -- ── Template loader ───────────────────────────────────────────────────────────
--- Reads from ~/work/notes/templates/*.norg
+-- Reads from ~/personal/notes/templates/*.norg
 -- To change a template, edit the .norg file — no Lua changes needed.
 
 local function load_template(name)
@@ -417,15 +417,15 @@ return {
     "nvim-neorg/neorg",
     lazy = false,
     version = "*",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-neorg/lua-utils.nvim",
-      "pysan3/pathlib.nvim",
-      "nvim-neotest/nvim-nio",
-      "MunifTanjim/nui.nvim",
-      "nvim-neorg/tree-sitter-norg",
-      "nvim-neorg/tree-sitter-norg-meta",
-    },
+    -- dependencies = {
+    --   "nvim-lua/plenary.nvim",
+    --   "nvim-neorg/lua-utils.nvim",
+    --   "pysan3/pathlib.nvim",
+    --   "nvim-neotest/nvim-nio",
+    --   "MunifTanjim/nui.nvim",
+    --   "nvim-neorg/tree-sitter-norg",
+    --   "nvim-neorg/tree-sitter-norg-meta",
+    -- },
     opts = {
       load = {
         ["core.defaults"] = {},
@@ -433,9 +433,7 @@ return {
         ["core.dirman"] = {
           config = {
             workspaces = {
-              brain = "~/work/notes",
-              -- cora = "~/work/notes/projects/cora",
-              -- fleeting = "~/work/notes/fleeting",
+              brain = "~/personal/notes",
             },
             default_workspace = "brain",
             index = "index.norg",
@@ -445,7 +443,7 @@ return {
         ["core.export"] = {},
         ["core.export.markdown"] = { config = { extensions = "all" } },
         ["core.journal"] = {
-          config = { workspace = "fleeting", journal_folder = "." },
+          config = { workspace = "brain", journal_folder = "." },
         },
         ["core.summary"] = {},
       },
@@ -455,6 +453,7 @@ return {
     end,
 
     keys = {
+      { "<leader>m", desc = "Notes" },
       { "<leader>mi", "<cmd>Neorg index<cr>", desc = "Notes: open index" },
 
       -- Capture
@@ -463,7 +462,7 @@ return {
       {
         "<leader>mt",
         function()
-          vim.cmd("edit " .. vim.fn.expand("~/work/notes/personal-todo.norg"))
+          vim.cmd("edit " .. vim.fn.expand("~/personal/notes/personal-todo.norg"))
         end,
         desc = "Create: personal TODO",
       },
