@@ -417,15 +417,15 @@ return {
     "nvim-neorg/neorg",
     lazy = false,
     version = "*",
-    -- dependencies = {
-    --   "nvim-lua/plenary.nvim",
-    --   "nvim-neorg/lua-utils.nvim",
-    --   "pysan3/pathlib.nvim",
-    --   "nvim-neotest/nvim-nio",
-    --   "MunifTanjim/nui.nvim",
-    --   "nvim-neorg/tree-sitter-norg",
-    --   "nvim-neorg/tree-sitter-norg-meta",
-    -- },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-neorg/lua-utils.nvim",
+      "pysan3/pathlib.nvim",
+      "nvim-neotest/nvim-nio",
+      "MunifTanjim/nui.nvim",
+      "nvim-neorg/tree-sitter-norg",
+      "nvim-neorg/tree-sitter-norg-meta",
+    },
     opts = {
       load = {
         ["core.defaults"] = {},
