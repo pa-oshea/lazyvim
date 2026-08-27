@@ -1,4 +1,7 @@
 -- ~/.config/nvim/lua/plugins/neorg.lua
+if true then
+  return {}
+end
 
 -- ── Config ────────────────────────────────────────────────────────────────────
 

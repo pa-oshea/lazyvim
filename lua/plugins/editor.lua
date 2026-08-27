@@ -1,5 +1,13 @@
 return {
   {
+    "ThorstenRhau/token",
+    version = "*",
+    config = function()
+      vim.cmd.colorscheme("token-flint")
+    end,
+  },
+
+  {
     "suliatis/jumppack",
     config = true,
   },
