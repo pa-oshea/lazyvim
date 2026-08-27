@@ -6,7 +6,21 @@ return {
       vim.cmd.colorscheme("token-flint")
     end,
   },
-
+  {
+    "saghen/blink.cmp",
+    opts = {
+      sources = {
+        default = { "lsp", "path", "snippets", "buffer", "orgmode" },
+        providers = {
+          orgmode = {
+            name = "Orgmode",
+            module = "orgmode.org.autocompletion.blink",
+            fallbacks = { "buffer" },
+          },
+        },
+      },
+    },
+  },
   {
     "suliatis/jumppack",
     config = true,
