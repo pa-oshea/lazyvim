@@ -10,8 +10,8 @@ return {
     ft = { "org" },
     config = function()
       require("orgmode").setup({
-        org_agenda_files = "~/work/notes/**/*.org",
-        org_default_notes_file = "~/work/notes/fleeting/refile.org",
+        org_agenda_files = "~/work/org-notes/**/*.org",
+        org_default_notes_file = "~/work/org-notes/fleeting/refile.org",
 
         org_todo_keywords = { "TODO", "NEXT", "WAITING", "|", "DONE", "CANCELLED" },
         org_todo_keyword_faces = {
@@ -25,27 +25,27 @@ return {
           f = {
             description = "Fleeting note",
             template = "* %?\n  %U",
-            target = "~/work/notes/fleeting/%<%Y%m%d%H%M%S>-fleeting.org",
+            target = "~/work/org-notes/fleeting/%<%Y%m%d%H%M%S>-fleeting.org",
           },
           p = {
             description = "Permanent note",
             template = "* %?\n  %U",
-            target = "~/work/notes/permanent/%<%Y%m%d%H%M%S>-permanent.org",
+            target = "~/work/org-notes/permanent/%<%Y%m%d%H%M%S>-permanent.org",
           },
           a = {
             description = "Area note",
             template = "* %?\n  %U",
-            target = "~/work/notes/areas/%<%Y%m%d%H%M%S>-area.org",
+            target = "~/work/org-notes/areas/%<%Y%m%d%H%M%S>-area.org",
           },
           j = {
             description = "Project note",
             template = "* %?\n  %U",
-            target = "~/work/notes/projects/%<%Y%m%d%H%M%S>-project.org",
+            target = "~/work/org-notes/projects/%<%Y%m%d%H%M%S>-project.org",
           },
           t = {
             description = "TODO",
             template = "* TODO %?\n  %U",
-            target = "~/work/notes/fleeting/refile.org",
+            target = "~/work/org-notes/fleeting/refile.org",
           },
         },
 
@@ -67,8 +67,8 @@ return {
     dependencies = { "nvim-orgmode/orgmode" },
     config = function()
       require("org-roam").setup({
-        directory = "~/work/notes",
-        org_files = { "~/work/notes/**/*.org" },
+        directory = "~/work/org-notes",
+        org_files = { "~/work/org-notes/**/*.org" },
       })
     end,
   },
