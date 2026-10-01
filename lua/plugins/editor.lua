@@ -45,10 +45,15 @@ return {
         ["q"] = "actions.close",
       },
     },
-  -- stylua: ignore
-  keys = {
-    { "<leader>;", function() require("oil").toggle_float() end, desc = "Toggle Oil" },
-  },
+    keys = {
+      {
+        "<leader>-",
+        function()
+          require("oil").toggle_float()
+        end,
+        desc = "Toggle Oil",
+      },
+    },
   },
   {
     "folke/noice.nvim",
