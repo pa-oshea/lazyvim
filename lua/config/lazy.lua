@@ -62,8 +62,8 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.util.project" },
     -- import/override with your plugins
     -- { "max397574/better-escape.nvim", config = true },
-    { import = "lazyvim.plugins.extras.ai.copilot" },
-    { import = "lazyvim.plugins.extras.ai.copilot-chat" },
+    -- { import = "lazyvim.plugins.extras.ai.copilot" },
+    -- { import = "lazyvim.plugins.extras.ai.copilot-chat" },
     { import = "plugins" },
   },
   defaults = {
