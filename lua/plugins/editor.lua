@@ -22,6 +22,58 @@ return {
     },
   },
   {
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+
+    opts = {
+      strategies = {
+        chat = {
+          adapter = "copilot_acp",
+        },
+        inline = {
+          adapter = "copilot",
+        },
+        cmd = {
+          adapter = "copilot",
+        },
+      },
+    },
+
+    keys = {
+      {
+        "<leader>ac",
+        "<cmd>CodeCompanionChat<cr>",
+        desc = "CodeCompanion Chat",
+      },
+      {
+        "<leader>aa",
+        "<cmd>CodeCompanionActions<cr>",
+        mode = { "n", "v" },
+        desc = "CodeCompanion Actions",
+      },
+      {
+        "<leader>at",
+        "<cmd>CodeCompanionChat Toggle<cr>",
+        desc = "CodeCompanion Toggle Chat",
+      },
+      {
+        "<leader>aA",
+        ":CodeCompanionChat Add<cr>",
+        mode = "v",
+        desc = "CodeCompanion Add Selection to Chat",
+      },
+      {
+        "<leader>ai",
+        ":CodeCompanion<cr>",
+        mode = { "n", "v" },
+        desc = "CodeCompanion Inline Prompt",
+      },
+    },
+  },
+  {
     "suliatis/jumppack",
     config = true,
   },
