@@ -1,7 +1,9 @@
 return {
   { "rcasia/neotest-java", pin = true },
+  { "marilari88/neotest-vitest" },
   {
     "nvim-neotest/neotest",
+    dependencies = { "marilari88/neotest-vitest" },
     opts = {
       adapters = {
         ["neotest-java"] = {
@@ -11,6 +13,7 @@ return {
             force_maven_wrapper = false,
           },
         },
+        ["neotest-vitest"] = {},
       },
     },
 
