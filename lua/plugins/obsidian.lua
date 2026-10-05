@@ -14,12 +14,6 @@
 --     templates/      ← note templates
 
 return {
-  {
-    "iamcco/markdown-preview.nvim",
-    build = function() end, -- replace the build hook with a no-op
-    cmd = {}, -- remove command registrations so nothing conflicts
-    enabled = false, -- belt and braces
-  },
   -- ── render-markdown.nvim ────────────────────────────────────────────────
   -- Replaces obsidian.nvim's built-in UI. Better concealing, callout support,
   -- renders headings with icons, styles code blocks with language badges.
@@ -91,6 +85,9 @@ return {
   },
 
   -- ── obsidian.nvim ────────────────────────────────────────────────────────
+  -- All keymaps live under <leader>z (Zettelkasten) so they never collide
+  -- with the <leader>a (CodeCompanion/AI) or <leader>o (orgmode/overseer)
+  -- namespaces already in use elsewhere in this config.
   {
     "obsidian-nvim/obsidian.nvim",
     version = "*",
@@ -229,32 +226,32 @@ return {
       },
 
       -- Navigation
-      { "<leader>an", "<cmd>Obsidian new<cr>", desc = "New note" },
-      { "<leader>ao", "<cmd>Obsidian quick_switch<cr>", desc = "Quick switch note" },
-      { "<leader>as", "<cmd>Obsidian search<cr>", desc = "Search vault" },
-      { "<leader>ab", "<cmd>Obsidian backlinks<cr>", desc = "Backlinks" },
-      { "<leader>at", "<cmd>Obsidian tags<cr>", desc = "Browse tags" },
-      { "<leader>al", "<cmd>Obsidian links<cr>", desc = "Links in note" },
-      { "<leader>aT", "<cmd>Obsidian toc<cr>", desc = "Table of contents" },
+      { "<leader>zn", "<cmd>Obsidian new<cr>", desc = "New note" },
+      { "<leader>zo", "<cmd>Obsidian quick_switch<cr>", desc = "Quick switch note" },
+      { "<leader>zf", "<cmd>Obsidian search<cr>", desc = "Search vault" },
+      { "<leader>zb", "<cmd>Obsidian backlinks<cr>", desc = "Backlinks" },
+      { "<leader>zt", "<cmd>Obsidian tags<cr>", desc = "Browse tags" },
+      { "<leader>zl", "<cmd>Obsidian links<cr>", desc = "Links in note" },
+      { "<leader>zc", "<cmd>Obsidian toc<cr>", desc = "Table of contents" },
 
       -- Daily notes
-      { "<leader>ad", "<cmd>Obsidian today<cr>", desc = "Today's note" },
-      { "<leader>ay", "<cmd>Obsidian yesterday<cr>", desc = "Yesterday's note" },
+      { "<leader>zd", "<cmd>Obsidian today<cr>", desc = "Today's note" },
+      { "<leader>zy", "<cmd>Obsidian yesterday<cr>", desc = "Yesterday's note" },
 
       -- Templates & creation
-      { "<leader>aN", "<cmd>Obsidian new_from_template<cr>", desc = "New from template" },
+      { "<leader>zN", "<cmd>Obsidian new_from_template<cr>", desc = "New from template" },
 
       -- Rename (LSP rename — updates all [[links]] across vault)
-      { "<leader>ar", "<cmd>Obsidian rename<cr>", desc = "Rename note" },
+      { "<leader>zr", "<cmd>Obsidian rename<cr>", desc = "Rename note" },
 
       -- Open current note in Obsidian app (graph view, mobile preview)
-      { "<leader>aO", "<cmd>Obsidian open<cr>", desc = "Open in Obsidian app" },
+      { "<leader>zO", "<cmd>Obsidian open<cr>", desc = "Open in Obsidian app" },
 
       -- Toggle checkbox on current line
-      { "<leader>ac", "<cmd>Obsidian toggle_checkbox<cr>", desc = "Toggle checkbox" },
+      { "<leader>zx", "<cmd>Obsidian toggle_checkbox<cr>", desc = "Toggle checkbox" },
 
       -- Paste image from clipboard (requires xclip/wl-clipboard on Linux)
-      { "<leader>ai", "<cmd>Obsidian paste_img<cr>", desc = "Paste image" },
+      { "<leader>zi", "<cmd>Obsidian paste_img<cr>", desc = "Paste image" },
     },
   },
 }

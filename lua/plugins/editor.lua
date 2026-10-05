@@ -10,7 +10,10 @@ return {
     "saghen/blink.cmp",
     opts = {
       sources = {
-        default = { "lsp", "path", "snippets", "buffer", "orgmode" },
+        default = { "lsp", "path", "snippets", "buffer" },
+        per_filetype = {
+          org = { "orgmode" },
+        },
         providers = {
           orgmode = {
             name = "Orgmode",
